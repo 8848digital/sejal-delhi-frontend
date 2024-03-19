@@ -4,10 +4,10 @@ import SearchSelectInputField from '../SearchSelectInputField/SearchSelectInputF
 import { useRouter } from 'next/router';
 
 const KundanTable = ({
-  handleRecipietChange,
-  recieptData,
+  handleReceiptChange,
+  receiptData,
   karigarData,
-  setRecipitData,
+  setReceiptData,
   selectedDropdownValue,
   setSelectedDropdownValue,
   readyReceiptType,
@@ -65,7 +65,7 @@ const KundanTable = ({
               <input
                 className="form-control input-sm border border-secondary"
                 type="text"
-                name="remarks"
+                name="receiptId"
                 value={query?.receiptId}
                 readOnly
                 autoComplete="off"
@@ -78,8 +78,8 @@ const KundanTable = ({
               <SearchSelectInputField
                 karigarData={karigarData}
                 defaultValue={karigarData?.karigar_name}
-                recipitData={recieptData}
-                setRecipitData={setRecipitData}
+                recipitData={receiptData}
+                setRecipitData={setReceiptData}
                 selectedDropdownValue={selectedDropdownValue}
                 setSelectedDropdownValue={setSelectedDropdownValue}
                 setStateForDocStatus={setStateForDocStatus}
@@ -95,8 +95,8 @@ const KundanTable = ({
                 className="form-control input-sm border border-secondary"
                 type="text"
                 name="remarks"
-                value={recieptData?.remarks}
-                onChange={handleRecipietChange}
+                value={receiptData?.remarks}
+                onChange={handleReceiptChange}
                 readOnly={readOnlyFields}
                 autoComplete="off"
               />
@@ -109,8 +109,8 @@ const KundanTable = ({
                 value={
                   readyReceiptType ||
                   (defaultKarigarData !== undefined &&
-                    defaultKarigarData?.length > 0 &&
-                    defaultKarigarData !== null
+                  defaultKarigarData?.length > 0 &&
+                  defaultKarigarData !== null
                     ? defaultKarigarData[0]?.custom_ready_receipt_type
                     : '')
                 }
@@ -126,9 +126,9 @@ const KundanTable = ({
                     karigar_name: data.custom_store_location,
                   }))
                 }
-                defaultValue={'Mumbai'}
-                recipitData={recieptData}
-                setRecipitData={setRecipitData}
+                defaultValue={'Delhi'}
+                recipitData={receiptData}
+                setRecipitData={setReceiptData}
                 selectedDropdownValue={selectedLocation}
                 setSelectedDropdownValue={setSelectedLocation}
                 setStateForDocStatus={setStateForDocStatus}

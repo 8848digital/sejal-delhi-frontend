@@ -14,6 +14,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import UseCustomReceiptHook from './custom-receipt-hook';
+import GetApi from '@/services/api/general/get-api';
 
 const useReadyReceiptKarigar = () => {
   const { query } = useRouter();
@@ -25,14 +26,6 @@ const useReadyReceiptKarigar = () => {
   const inputRef = useRef<any>(null);
   const lastInputRef = useRef<any>(null);
   const firstInputRef = useRef<any>(null);
-  const [readyReceiptType, setReadyReceiptType] = useState<any>('');
-  const [recipitData, setRecipitData] = useState({
-    custom_karigar: ' ',
-    remarks: '',
-    custom_ready_receipt_type: readyReceiptType,
-    posting_date: '',
-    store_location: '',
-  });
 
   const [clickBtn, setClickBtn] = useState<boolean>(false);
   const [clicks, setClick] = useState<boolean>(false);
@@ -41,24 +34,13 @@ const useReadyReceiptKarigar = () => {
   const [materialListData, setMaterialListData] = useState<any>();
   const [warehouseListData, setWarehouseListData] = useState<any>();
   const [activeModalId, setActiveModalId] = useState<any>(null);
-
   const [kunKarigarDropdownReset, setKunKarigarDropdownReset] =
     useState<any>(false);
   const loginAcessToken = useSelector(get_access_token);
   let disabledValue: any;
 
   const [selectedDropdownValue, setSelectedDropdownValue] = useState<any>('');
-  const [selectedLocation, setSelectedLocation] = useState<any>();
-  useEffect(() => {
-    setRecipitData({
-      ...recipitData,
-      custom_ready_receipt_type: readyReceiptType,
-      store_location:
-        selectedLocation !== '' && selectedLocation !== undefined
-          ? selectedLocation
-          : 'Mumbai',
-    });
-  }, [readyReceiptType, selectedLocation]);
+  const [selectedLocation, setSelectedLocation] = useState<any>('Delhi');
 
   const {
     HandleDeleteReceipt,
@@ -95,7 +77,27 @@ const useReadyReceiptKarigar = () => {
     selectedKundanKarigarDropdownValue,
     setSelectedKundanKarigarDropdownValue,
     specificDataFromStore,
+    handleGetItemsByDeliveryRef,
+    readyReceiptType,
+    setReadyReceiptType,
+    receiptData,
+    setReceiptData,
+    deliveryNoteRefNo,
+    setDeliveryNoteRefNo,
+    deliveryRefDropdownData,
+    setDeliveryRefDropdownData,
   }: any = UseCustomReceiptHook();
+
+  useEffect(() => {
+    setReceiptData({
+      ...receiptData,
+      custom_ready_receipt_type: readyReceiptType,
+      store_location:
+        selectedLocation !== '' && selectedLocation !== undefined
+          ? selectedLocation
+          : 'Delhi',
+    });
+  }, [readyReceiptType, selectedLocation]);
 
   useEffect(() => {
     const getPurchaseList = async () => {
@@ -107,7 +109,7 @@ const useReadyReceiptKarigar = () => {
           loginAcessToken,
           capitalizeFirstLetter(query.receipt)
         );
-        console.log('listdataa', listData);
+
         if (listData?.data?.message?.status === 'success') {
           setKundanListing(listData?.data?.message?.data);
         }
@@ -116,19 +118,39 @@ const useReadyReceiptKarigar = () => {
     getPurchaseList();
   }, [clicks, router]);
 
-  useEffect(() => {
-    const getStateData: any = async () => {
-      const stateData: any = await getKarigarApi(loginAcessToken.token);
-      const KundanKarigarAPI = await kundanKarigarApi(loginAcessToken.token);
-      const materialListApi = await materialApi(loginAcessToken.token);
-      const warehouseData = await getWarehouseListApi(loginAcessToken?.token);
-      setKarigarData(stateData);
-      setKundanKarigarData(KundanKarigarAPI);
-      setMaterialListData(materialListApi);
-      if (warehouseData?.data?.message?.status === 'success') {
-        setWarehouseListData(warehouseData?.data?.message?.data);
-      }
+  const getStateData: any = async () => {
+    const deliveryNoteRefParams: any = {
+      version: 'v1',
+      method: 'get_delivery_notes_from_mumbai_site',
+      entity: 'purchase_receipt',
+      token: loginAcessToken?.token,
     };
+    const getDeliveryNoteRefNoData: any = await GetApi(deliveryNoteRefParams);
+    const stateData: any = await getKarigarApi(loginAcessToken.token);
+    const KundanKarigarData: any = await kundanKarigarApi(
+      loginAcessToken.token
+    );
+    const materialListData: any = await materialApi(loginAcessToken.token);
+    const warehouseData = await getWarehouseListApi(loginAcessToken?.token);
+
+    if (getDeliveryNoteRefNoData?.data?.message?.status === 'success') {
+      setDeliveryRefDropdownData(getDeliveryNoteRefNoData?.data?.message?.data);
+    }
+    if (stateData?.data?.message?.status === 'success') {
+      setKarigarData(stateData?.data?.message?.data);
+    }
+    if (KundanKarigarData?.data?.message?.status === 'success') {
+      setKundanKarigarData(KundanKarigarData?.data?.message?.data);
+    }
+    if (materialListData?.data?.message?.status === 'success') {
+      setMaterialListData(materialListData?.data?.message?.data);
+    }
+    if (warehouseData?.data?.message?.status === 'success') {
+      setWarehouseListData(warehouseData?.data?.message?.data);
+    }
+  };
+
+  useEffect(() => {
     getStateData();
   }, []);
 
@@ -299,8 +321,8 @@ const useReadyReceiptKarigar = () => {
     setActiveModalId(null);
   };
 
-  const handleRecipietChange = (e: any) => {
-    setRecipitData({ ...recipitData, [e.target.name]: e.target.value });
+  const handleReceiptChange = (e: any) => {
+    setReceiptData({ ...receiptData, [e.target.name]: e.target.value });
     setStateForDocStatus(true);
   };
 
@@ -372,15 +394,16 @@ const useReadyReceiptKarigar = () => {
         ...rest,
       })
     );
-
+    console.log('modal value', modalValue);
     const values = {
       version: 'v1',
       method: 'create_purchase_receipt',
       entity: 'purchase_receipt',
-      ...recipitData,
+      ...receiptData,
       items: modalValue,
     };
     console.log(values, 'values on PR create');
+
     const isEmptyProductCode = values?.items?.some(
       (obj: any) => obj.product_code === ''
     );
@@ -392,41 +415,58 @@ const useReadyReceiptKarigar = () => {
     );
     const productVal = values.custom_karigar;
 
-    if (isEmptyProductCode) {
-      toast.error('Please fill all the required fields');
-    } else if (isEmptyNetWt) {
+    const isMissingTableMandatory = isEmptyProductCode && isEmptyNetWt;
+
+    console.log('submit values', productVal, values, receiptData);
+    if (
+      productVal === ' ' &&
+      Object?.keys(receiptData?.delivery_note_ref_no)?.length === 0 &&
+      isMissingTableMandatory
+    ) {
       toast.error('Please fill all the required fields');
     } else if (productVal === ' ') {
       toast.error('Mandatory field Karigar');
+    } else if (
+      Object?.keys(receiptData?.delivery_note_ref_no)?.length === 0 &&
+      isMissingTableMandatory
+    ) {
+      toast.error('Please fill all the required fields');
     } else {
-      const purchaseReceipt: any = await purchaseReceiptApi(
-        loginAcessToken.token,
-        values
-      );
-      console.log(
-        'purchase receipt api res',
-        purchaseReceipt,
-        readyReceiptType
-      );
-      if (purchaseReceipt?.data?.message?.hasOwnProperty('message')) {
-        router.push(
-          `${readyReceiptType?.toLowerCase()}/${purchaseReceipt?.data?.message
-            ?.message}`
-        );
-        toast.success('Purchase Receipt Created Successfully');
+      if (isEmptyProductCode) {
+        toast.error('Product code Mandatory');
+      } else if (isEmptyNetWt) {
+        toast.error('Please Enter Net Weight');
       } else {
-        toast.error(`${purchaseReceipt?.data?.message?.error}`);
+        const purchaseReceipt: any = await purchaseReceiptApi(
+          loginAcessToken.token,
+          values
+        );
+        console.log(
+          'purchase receipt api res',
+          purchaseReceipt,
+          readyReceiptType
+        );
+        if (purchaseReceipt?.data?.message?.status === 'success') {
+          router.push(
+            `${readyReceiptType?.toLowerCase()}/${purchaseReceipt?.data?.message
+              ?.data}`
+          );
+          toast.success('Purchase Receipt Created Successfully');
+        } else {
+          toast.error(`${purchaseReceipt?.data?.message?.error}`);
+        }
       }
     }
   };
 
   const HandleEmptyReadyReceiptForm: any = () => {
-    setRecipitData({
+    setReceiptData({
       custom_karigar: ' ',
       remarks: '',
       custom_ready_receipt_type: readyReceiptType,
       posting_date: '',
       store_location: 'Mumbai',
+      delivery_note_ref_no: '',
     });
     setTableData([initialTableState]);
     setSelectedDropdownValue('');
@@ -505,7 +545,7 @@ const useReadyReceiptKarigar = () => {
       version: 'v1',
       method: 'put_purchase_receipt',
       entity: 'purchase_receipt',
-      ...recipitData,
+      ...receiptData,
       items: updatedMergedList,
     };
 
@@ -552,15 +592,9 @@ const useReadyReceiptKarigar = () => {
               custom_total: Number(row.totalAmount) + Number(row.custom_other),
             };
           } else if (row.custom_other !== '') {
-            return {
-              ...row,
-              custom_total: Number(row.custom_other),
-            };
+            return { ...row, custom_total: Number(row.custom_other) };
           } else {
-            return {
-              ...row,
-              custom_total: Number(row.totalAmount),
-            };
+            return { ...row, custom_total: Number(row.totalAmount) };
           }
         }
         return row;
@@ -568,16 +602,12 @@ const useReadyReceiptKarigar = () => {
 
     // Change key name from 'product_code' to 'item_code' in the tableData
     const updatedTableDataWithRenamedKey = updatedtableData?.map((row: any) => {
-      return {
-        ...row,
-        item_code: row.product_code,
-      };
+      return { ...row, item_code: row.product_code };
     });
 
     // List of keys to be excluded from the API request
     const keyToExclude = ['docstatus'];
-
-    const updatedReceiptData: any = { ...recipitData };
+    const updatedReceiptData: any = { ...receiptData };
     keyToExclude?.forEach((key: any) => delete updatedReceiptData[key]);
 
     const values = {
@@ -611,11 +641,11 @@ const useReadyReceiptKarigar = () => {
     setClick,
     kundanListing,
     handleCreate,
-    handleRecipietChange,
+    handleReceiptChange,
     handleAddRow,
-    recipitData,
+    receiptData,
     karigarData,
-    setRecipitData,
+    setReceiptData,
     handleFieldChange,
     tableData,
     handleDeleteRow,
@@ -665,6 +695,10 @@ const useReadyReceiptKarigar = () => {
     selectedLocation,
     setSelectedLocation,
     specificDataFromStore,
+    handleGetItemsByDeliveryRef,
+    deliveryNoteRefNo,
+    setDeliveryNoteRefNo,
+    deliveryRefDropdownData,
   };
 };
 

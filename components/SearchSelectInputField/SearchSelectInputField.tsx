@@ -11,15 +11,12 @@ const SearchSelectInputField = ({
   placeholder,
   className,
   readOnlyFields,
-  style,
   clientGroupList,
   handleSelectClientGroup,
   name,
   selectDropDownReset,
   setSelectDropDownReset,
 }: any) => {
-
-
   const inputRef = useRef<any>(null);
   const dropdownRef = useRef<HTMLUListElement>(null);
 
@@ -96,7 +93,7 @@ const SearchSelectInputField = ({
       setShowDropdown(!showDropdown);
       setSelectedIndex(-1);
       setFilterDropdownList(karigarData?.length > 0 && karigarData);
-      setSelectDropDownReset(false);
+      // setSelectDropDownReset(false);
     }
   };
 
@@ -104,9 +101,15 @@ const SearchSelectInputField = ({
     setSelectedDropdownValue(data?.karigar_name);
     setShowDropdown(false);
     setSelectedIndex(i !== undefined ? i : -1);
-
+    console.log('handle karigar', setRecipitData, name, data);
     if (setRecipitData !== undefined && name === 'custom_karigar') {
       setRecipitData({ ...recipitData, custom_karigar: data?.karigar_name });
+    }
+    if (setRecipitData !== undefined && name === 'delivery_note_ref_no') {
+      setRecipitData({
+        ...recipitData,
+        delivery_note_ref_no: data?.karigar_name,
+      });
     }
     if (setRecipitData !== undefined && name === 'store_location') {
       setRecipitData({
@@ -179,6 +182,12 @@ const SearchSelectInputField = ({
         custom_karigar: selectedDropdownValue,
       });
     }
+    if (setRecipitData !== undefined && name === 'delivery_note_ref_no') {
+      setRecipitData({
+        ...recipitData,
+        delivery_note_ref_no: selectedDropdownValue,
+      });
+    }
     if (setRecipitData !== undefined && name === 'store_location') {
       setRecipitData({
         ...recipitData,
@@ -213,88 +222,91 @@ const SearchSelectInputField = ({
 
   return (
     <>
-      <input
-        type="text"
-        name={name}
-        className={className}
-        placeholder={placeholder}
-        onBlur={HandleClientBlur}
-        onChange={(e) => handleFieldChange(e)}
-        onClick={handleDocumentClick}
-        onMouseDown={handleShowDropdown}
-        value={selectedDropdownValue}
-        defaultValue={defaultValue}
-        readOnly={readOnlyFields}
-        onKeyDown={handleKeyDown}
-        autoComplete="off"
-        ref={inputRef}
-      />
-      {showDropdown && (
-        <ul className={`dropdown-ul-list ${style}`} ref={dropdownRef}>
-          {noRecords === false && filterDropdownList?.length === 0 ? (
-            <>
-              {karigarData?.length > 0 &&
-                karigarData !== null &&
-                karigarData.map((list: any, index: any) => (
-                  <li
-                    key={index}
-                    onClick={() => handleSelectedOption(list, index)}
-                    className="dropdown-list"
-                  >
-                    {list.karigar_name}
-                  </li>
-                ))}
-            </>
-          ) : (
-            <>
-              {filterDropdownList?.length > 0 &&
-                filterDropdownList !== null &&
-                filterDropdownList.map((name: any, i: any) => (
-                  <li
-                    key={i}
-                    onMouseDown={(e) => {
-                      handleSelectedOption(name, i);
-                    }}
-                    className={`dropdown-list ${i === selectedIndex ? 'selected' : ''
-                      }`}
-                  >
-                    {name.karigar_name}
-                  </li>
-                ))}
-            </>
-          )}
-          {clientGroupList?.length > 0 && (
-            <>
-              {noRecords === true && filterDropdownList?.length === 0 && (
-                <>
-                  <div className="text-small px-2 mt-1">Client Group</div>
-                  <li className="dropdown-list p-1">
-                    <select
-                      className="form-select form-select-sm border"
-                      aria-label="Default select example"
-                      onClick={(e) => {
-                        e.stopPropagation(); // Stop event propagation
-                        handleShowClientGroupSelect(e);
-                      }}
-                      onChange={(e) => {
-                        handleSelectClientGroup(e.target.value);
-                        setSelectedDropdownValue(selectedDropdownValue);
-                      }}
+      <div className="position-relative">
+        <input
+          type="text"
+          name={name}
+          className={className}
+          placeholder={placeholder}
+          onBlur={HandleClientBlur}
+          onChange={(e) => handleFieldChange(e)}
+          onClick={handleDocumentClick}
+          onMouseDown={handleShowDropdown}
+          value={selectedDropdownValue || defaultValue}
+          defaultValue={defaultValue}
+          readOnly={readOnlyFields}
+          onKeyDown={handleKeyDown}
+          autoComplete="off"
+          ref={inputRef}
+        />
+        {showDropdown && (
+          <ul className={`dropdown-ul-list `} ref={dropdownRef}>
+            {noRecords === false && filterDropdownList?.length === 0 ? (
+              <>
+                {karigarData?.length > 0 &&
+                  karigarData !== null &&
+                  karigarData.map((list: any, index: any) => (
+                    <li
+                      key={index}
+                      onClick={() => handleSelectedOption(list, index)}
+                      className="dropdown-list"
                     >
-                      <option>Select client group</option>
-                      {clientGroupList?.length > 0 &&
-                        clientGroupList !== null &&
-                        clientGroupList.map((data: any, index: any) => (
-                          <option key={index}>{data.client_group}</option>
-                        ))}
-                    </select>
-                  </li>
-                </>
-              )}
-            </>
-          )}
-        </ul>
-      )}
+                      {list.karigar_name}
+                    </li>
+                  ))}
+              </>
+            ) : (
+              <>
+                {filterDropdownList?.length > 0 &&
+                  filterDropdownList !== null &&
+                  filterDropdownList.map((name: any, i: any) => (
+                    <li
+                      key={i}
+                      onMouseDown={(e) => {
+                        handleSelectedOption(name, i);
+                      }}
+                      className={`dropdown-list ${
+                        i === selectedIndex ? 'selected' : ''
+                      }`}
+                    >
+                      {name.karigar_name}
+                    </li>
+                  ))}
+              </>
+            )}
+            {clientGroupList?.length > 0 && (
+              <>
+                {noRecords === true && filterDropdownList?.length === 0 && (
+                  <>
+                    <div className="text-small px-2 mt-1">Client Group</div>
+                    <li className="dropdown-list p-1">
+                      <select
+                        className="form-select form-select-sm border"
+                        aria-label="Default select example"
+                        onClick={(e) => {
+                          e.stopPropagation(); // Stop event propagation
+                          handleShowClientGroupSelect(e);
+                        }}
+                        onChange={(e) => {
+                          handleSelectClientGroup(e.target.value);
+                          setSelectedDropdownValue(selectedDropdownValue);
+                        }}
+                      >
+                        <option>Select client group</option>
+                        {clientGroupList?.length > 0 &&
+                          clientGroupList !== null &&
+                          clientGroupList.map((data: any, index: any) => (
+                            <option key={index}>{data.client_group}</option>
+                          ))}
+                      </select>
+                    </li>
+                  </>
+                )}
+              </>
+            )}
+          </ul>
+        )}
+      </div>
     </>
   );
 };

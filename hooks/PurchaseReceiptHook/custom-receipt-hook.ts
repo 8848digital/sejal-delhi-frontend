@@ -1,4 +1,5 @@
 import DeletePurchaseReceiptApi from '@/services/api/PurchaseReceipt/delete-purchase-receipt';
+import GetItemsByDeliveryNoteRefApi from '@/services/api/PurchaseReceipt/get-items-by-reference-no-api';
 import getPurchasreceiptListApi from '@/services/api/PurchaseReceipt/get-purchase-recipts-list-api';
 import postUploadFile from '@/services/api/PurchaseReceipt/post-upload-file-api';
 import UpdateDocStatusApi from '@/services/api/general/update-docStatus-api';
@@ -21,12 +22,25 @@ const UseCustomReceiptHook: any = () => {
 
   const loginAcessToken = useSelector(get_access_token);
   let specificDataFromStore: any = useSelector(get_specific_receipt_data);
+  const [readyReceiptType, setReadyReceiptType] = useState<any>('');
+  const [receiptData, setReceiptData] = useState({
+    custom_karigar: ' ',
+    remarks: '',
+    custom_ready_receipt_type: readyReceiptType,
+    posting_date: '',
+    store_location: '',
+    delivery_note_ref_no: '',
+  });
 
   const [kundanListing, setKundanListing] = useState<any>([]);
   const [defaultKarigarData, setDefaultKarigarData] = useState<any>([]);
   const [indexVal, setIndexVal] = useState<any>();
   const [stateForDocStatus, setStateForDocStatus] = useState<any>(false);
   const [showModal, setShowModal] = useState<boolean>(false);
+  const [deliveryNoteRefNo, setDeliveryNoteRefNo] = useState<any>('');
+  const [deliveryRefDropdownData, setDeliveryRefDropdownData] = useState<any>(
+    []
+  );
   const [matWt, setMatWt] = useState<any>({
     tableMatWt: '',
     bbPcs: '',
@@ -270,6 +284,7 @@ const UseCustomReceiptHook: any = () => {
     }
     setStateForDocStatus(true);
   };
+
   const handleDeleteChildTableRow = (id: any) => {
     if (materialWeight?.length > 1) {
       const updatedData = materialWeight?.filter(
@@ -469,7 +484,6 @@ const UseCustomReceiptHook: any = () => {
   };
 
   const handleAddRow = (value: any) => {
-    console.log('value for add row', value);
     const newRow = {
       idx: tableData?.length + 1,
       product_code: '',
@@ -483,7 +497,6 @@ const UseCustomReceiptHook: any = () => {
       custom_add_photo: '',
       table: [
         {
-          // idx: materialWeight !== undefined ? materialWeight?.length : 1,
           idx: value === 'modalRow' ? materialWeight?.length + 1 : 1,
           material_abbr: '',
           material: '',
@@ -523,6 +536,21 @@ const UseCustomReceiptHook: any = () => {
     setStateForDocStatus(true);
   };
 
+  const handleGetItemsByDeliveryRef: any = async () => {
+    console.log('delivery ref no', deliveryNoteRefNo);
+    const reqParams: any = {
+      version: 'v1',
+      method: 'get_item_code_details_from_mumbai_site',
+      entity: 'purchase_receipt',
+      name: deliveryNoteRefNo,
+    };
+    let itemsData: any = await GetItemsByDeliveryNoteRefApi(reqParams);
+
+    if (itemsData?.data?.message?.status === 'success') {
+      setTableData(itemsData?.data?.message?.data);
+    }
+  };
+
   return {
     setKundanListing,
     kundanListing,
@@ -558,6 +586,15 @@ const UseCustomReceiptHook: any = () => {
     selectedKundanKarigarDropdownValue,
     setSelectedKundanKarigarDropdownValue,
     specificDataFromStore,
+    handleGetItemsByDeliveryRef,
+    readyReceiptType,
+    setReadyReceiptType,
+    receiptData,
+    setReceiptData,
+    deliveryNoteRefNo,
+    setDeliveryNoteRefNo,
+    deliveryRefDropdownData,
+    setDeliveryRefDropdownData,
   };
 };
 

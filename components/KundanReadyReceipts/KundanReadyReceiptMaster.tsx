@@ -8,18 +8,18 @@ import KundanTable from './KundanTable';
 import PurchaseReceiptModal from '../ModalMaster/PurchaseReceiptModal';
 import useReadyReceiptKarigar from '@/hooks/PurchaseReceiptHook/purchase-receipt-master-hook';
 import TabSection from '../TabSection';
-
+import SearchSelectInputField from '../SearchSelectInputField/SearchSelectInputField';
+import DeliveryNoteReference from './DeliveryNoteReference';
 
 const ReadyReceiptKundanKarigarMaster = () => {
   const {
-    setClick,
     kundanListing,
     setKundanListing,
     handleCreate,
-    handleRecipietChange,
+    handleReceiptChange,
     handleAddRow,
     karigarData,
-    setRecipitData,
+    setReceiptData,
     handleFieldChange,
     tableData,
     handleDeleteRow,
@@ -32,7 +32,7 @@ const ReadyReceiptKundanKarigarMaster = () => {
     materialListData,
     calculateRowValue,
     handleDeleteChildTableRow,
-    recipitData,
+    receiptData,
     setMaterialWeight,
     closeModal,
     handleSaveModal,
@@ -65,13 +65,17 @@ const ReadyReceiptKundanKarigarMaster = () => {
     firstInputRef,
     lastInputRef,
     specificDataFromStore,
+    handleGetItemsByDeliveryRef,
+    deliveryNoteRefNo,
+    setDeliveryNoteRefNo,
+    deliveryRefDropdownData,
   } = useReadyReceiptKarigar();
-
 
   const capitalizeWords: any = (word: any) => {
     return word?.replace(/\b\w/g, (char: any) => char?.toUpperCase());
-  }
+  };
   const receiptName: any = capitalizeWords(lastPartOfURL);
+  console.log('selected location', selectedLocation);
 
   return (
     <div className="container-lg ">
@@ -89,32 +93,34 @@ const ReadyReceiptKundanKarigarMaster = () => {
             role="tabpanel"
             aria-labelledby="pills-home-tab"
           >
-            <div className="tab-responsive ">
-              <KundanListing
-                kundanListing={kundanListing}
-                setKundanListing={setKundanListing}
-                HandleDeleteReceipt={HandleDeleteReceipt}
-                HandleUpdateDocStatus={HandleUpdateDocStatus}
-                karigarData={karigarData}
-                colPlaceholder1={'Receipt No.'}
-                colPlaceholder2={'Karigar'}
-                deleteApiVersion={'v1'}
-                deleteApiMethod={'delete_purchase_receipt'}
-                deleteApiEntity={'purchase_receipt'}
-                purchasRecieptListParams={purchasRecieptListParams}
-                printApiMethod={
-                  lastPartOfURL === 'kundan'
-                    ? 'print_purchase_receipt_kundan'
-                    : 'print_purchase_receipt_mangalsutra'
-                }
-                printApiEntity={
-                  lastPartOfURL === 'kundan'
-                    ? 'purchase_receipt'
-                    : 'purchase_receipt'
-                }
-                kunKarigarDropdownReset={kunKarigarDropdownReset}
-                setKunKarigarDropdownReset={setKunKarigarDropdownReset}
-              />
+            <div className="tab-responsive row">
+              <div className="col-11 mx-auto">
+                <KundanListing
+                  kundanListing={kundanListing}
+                  setKundanListing={setKundanListing}
+                  HandleDeleteReceipt={HandleDeleteReceipt}
+                  HandleUpdateDocStatus={HandleUpdateDocStatus}
+                  karigarData={karigarData}
+                  colPlaceholder1={'Receipt No.'}
+                  colPlaceholder2={'Karigar'}
+                  deleteApiVersion={'v1'}
+                  deleteApiMethod={'delete_purchase_receipt'}
+                  deleteApiEntity={'purchase_receipt'}
+                  purchasRecieptListParams={purchasRecieptListParams}
+                  printApiMethod={
+                    lastPartOfURL === 'kundan'
+                      ? 'print_purchase_receipt_kundan'
+                      : 'print_purchase_receipt_mangalsutra'
+                  }
+                  printApiEntity={
+                    lastPartOfURL === 'kundan'
+                      ? 'purchase_receipt'
+                      : 'purchase_receipt'
+                  }
+                  kunKarigarDropdownReset={kunKarigarDropdownReset}
+                  setKunKarigarDropdownReset={setKunKarigarDropdownReset}
+                />
+              </div>
             </div>
           </div>
           <div
@@ -142,10 +148,10 @@ const ReadyReceiptKundanKarigarMaster = () => {
               </div>
               <div className=" ">
                 <KundanTable
-                  handleRecipietChange={handleRecipietChange}
-                  recieptData={recipitData}
+                  handleReceiptChange={handleReceiptChange}
+                  receiptData={receiptData}
                   karigarData={karigarData}
-                  setRecipitData={setRecipitData}
+                  setReceiptData={setReceiptData}
                   selectedDropdownValue={selectedDropdownValue}
                   setSelectedDropdownValue={setSelectedDropdownValue}
                   readyReceiptType={readyReceiptType}
@@ -161,17 +167,30 @@ const ReadyReceiptKundanKarigarMaster = () => {
                   setKunKarigarDropdownReset={setKunKarigarDropdownReset}
                 />
               </div>
-              <div className="container d-flex justify-content-end p-o">
-                <button
-                  className="btn btn-link p-0"
-                  onClick={() => {
-                    if (!readOnlyFields) {
-                      handleAddRow('tableRow');
-                    }
-                  }}
-                >
-                  Add Row
-                </button>
+              <div className="container d-flex justify-content-between p-0 mb-1">
+                <DeliveryNoteReference
+                  DeliveryRefNo={deliveryRefDropdownData}
+                  receiptData={receiptData}
+                  setReceiptData={setReceiptData}
+                  deliveryNoteRefNo={deliveryNoteRefNo}
+                  setDeliveryNoteRefNo={setDeliveryNoteRefNo}
+                  setStateForDocStatus={setStateForDocStatus}
+                  readOnlyFields={readOnlyFields}
+                  setKunKarigarDropdownReset={setKunKarigarDropdownReset}
+                  handleGetItemsByDeliveryRef={handleGetItemsByDeliveryRef}
+                />
+                <div>
+                  <button
+                    className="btn btn-link p-0"
+                    onClick={() => {
+                      if (!readOnlyFields) {
+                        handleAddRow('tableRow');
+                      }
+                    }}
+                  >
+                    Add Row
+                  </button>
+                </div>
               </div>
               <div>
                 <KundanKarigarReadyReceiptMasterTable
@@ -222,8 +241,8 @@ const ReadyReceiptKundanKarigarMaster = () => {
           materialListData={materialListData}
           calculateRowValue={calculateRowValue}
           handleDeleteChildTableRow={handleDeleteChildTableRow}
-          setRecipitData={setRecipitData}
-          recipitData={recipitData}
+          setRecipitData={setReceiptData}
+          recipitData={receiptData}
           selectedDropdownValue={selectedDropdownValue}
           setSelectedDropdownValue={setSelectedDropdownValue}
           handleSaveModal={handleSaveModal}
@@ -234,38 +253,6 @@ const ReadyReceiptKundanKarigarMaster = () => {
         />
       </div>
     </div>
-    // <div className="container-lg">
-    //   <Tabs
-    //     defaultActiveKey="list"
-    //     id="uncontrolled-tab-example"
-    //     className="mb-3 w-100 d-flex justify-content-center"
-    //   >
-    //     <Tab eventKey="list" title="Ready receipt (kundan karigar)">
-    //       Tab content for Home
-    //     </Tab>
-    //     <Tab eventKey="create" title="Create new ready receipt">
-    //       <KundanTable
-    //         handleRecipietChange={handleRecipietChange}
-    //         recieptData={recipitData}
-    //         karigarData={karigarData}
-    //         setRecipitData={setRecipitData}
-    //         selectedDropdownValue={selectedDropdownValue}
-    //         setSelectedDropdownValue={setSelectedDropdownValue}
-    //         readyReceiptType={readyReceiptType}
-    //         setReadyReceiptType={setReadyReceiptType}
-    //         stateForDocStatus={stateForDocStatus}
-    //         setStateForDocStatus={setStateForDocStatus}
-    //         readOnlyFields={readOnlyFields}
-    //         setReadOnlyFields={setReadOnlyFields}
-    //         warehouseListData={warehouseListData}
-    //         selectedLocation={selectedLocation}
-    //         setSelectedLocation={setSelectedLocation}
-    //         kunKarigarDropdownReset={kunKarigarDropdownReset}
-    //         setKunKarigarDropdownReset={setKunKarigarDropdownReset}
-    //       />
-    //     </Tab>
-    //   </Tabs>
-    // </div>
   );
 };
 

@@ -9,11 +9,7 @@ const DeleteApi = async (
   name: any
 ) => {
   let response: any;
-  //   const version = 'v1';
-  //   const method = 'delete_purchase_receipt_delete';
-  //   const entity = 'delete_purchase_receipts';
-
-  const params = `/api/method/sj_antique.sdk.api?version=${version}&method=${method}&entity=${entity}&name=${name}`;
+  const params = `${CONSTANTS.API_METHOD_SDK}?version=${version}&method=${method}&entity=${entity}&name=${name}`;
 
   const config = {
     headers: {
@@ -28,7 +24,15 @@ const DeleteApi = async (
       console.log(response, 'deleteRes');
     })
     .catch((err: any) => {
-      console.log(err);
+      if (err.code === 'ECONNABORTED') {
+        response = 'Request timed out';
+      } else if (err.code === 'ERR_BAD_REQUEST') {
+        response = 'Bad Request';
+      } else if (err.code === 'ERR_INVALID_URL') {
+        response = 'Invalid URL';
+      } else {
+        response = err;
+      }
     });
   return response;
 };

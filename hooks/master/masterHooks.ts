@@ -21,9 +21,13 @@ const useMasterHooks = () => {
     const getStateData: any = async () => {
       const karigarData: any = await getKarigarApi(loginAcessToken.token);
       const kunKarigarData = await kundanKarigarApi(loginAcessToken.token);
-      console.log(karigarData, 'KarigarData Master');
-      setKarigarList(karigarData);
-      setKunKarigarList(kunKarigarData);
+      // console.log(karigarData, kunKarigarData, 'KarigarData Master');
+      if (karigarData?.data?.message?.status === 'success') {
+        setKarigarList(karigarData?.data?.message?.data);
+      }
+      if (kunKarigarData?.data?.message?.status === 'success') {
+        setKunKarigarList(kunKarigarData?.data?.message?.data);
+      }
     };
     getStateData();
   }, []);
@@ -46,9 +50,11 @@ const useMasterHooks = () => {
       console.log('apires', apiRes);
       if (apiRes?.status === 'success' && apiRes?.hasOwnProperty('data')) {
         toast.success('Karigar Name Created');
-        const karigarApi: any = await getKarigarApi(loginAcessToken.token);
-        console.log(karigarApi, 'data after post api');
-        setKarigarList(karigarApi);
+        const karigarData: any = await getKarigarApi(loginAcessToken.token);
+
+        if (karigarData?.data?.message?.status === 'success') {
+          setKarigarList(karigarData?.data?.message?.data);
+        }
       } else {
         toast.error('Karigar Name already exist');
       }
@@ -59,7 +65,6 @@ const useMasterHooks = () => {
   const HandleInputValue = (e: any) => {
     setError('');
     setInputValue(e.target.value);
-    console.log(inputValue, 'input value');
   };
   // post kundan karigar api
   const HandleKunSubmit = async () => {
@@ -78,15 +83,18 @@ const useMasterHooks = () => {
       console.log('apires', apiRes);
       if (apiRes?.status === 'success' && apiRes?.hasOwnProperty('data')) {
         toast.success('Kundan Karigar Name Created');
-        const karigarApi = await kundanKarigarApi(loginAcessToken?.token);
-        setKunKarigarList(karigarApi);
+        const kunKarigarData: any = await kundanKarigarApi(
+          loginAcessToken?.token
+        );
+        if (kunKarigarData?.data?.message?.status === 'success') {
+          setKunKarigarList(kunKarigarData?.data?.message?.data);
+        }
       } else {
         toast.error('Kundan Karigar Name already exist');
       }
       setError('');
       setInputValue('');
     }
-    console.log(kunKarigarList, 'new added');
   };
   const HandleKunInputValue = (e: any) => {
     setError('');

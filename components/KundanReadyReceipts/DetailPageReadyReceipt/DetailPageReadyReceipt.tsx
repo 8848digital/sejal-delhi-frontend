@@ -9,6 +9,7 @@ import '../../../styles/detailPage.module.css';
 import Loader from '../../NoRecord/Loader';
 import NoRecord from '../../NoRecord/NoRecord';
 import { useRouter } from 'next/router';
+import DeliveryNoteReference from '../DeliveryNoteReference';
 
 const DetailPageReadyReceipt = () => {
   const {
@@ -21,13 +22,11 @@ const DetailPageReadyReceipt = () => {
 
   const { query } = useRouter();
   const {
-    setClick,
-    kundanListing,
     handleCreate,
-    handleRecipietChange,
+    handleReceiptChange,
     handleAddRow,
     karigarData,
-    setRecipitData,
+    setReceiptData,
     handleFieldChange,
     tableData,
     handleDeleteRow,
@@ -40,7 +39,7 @@ const DetailPageReadyReceipt = () => {
     materialListData,
     calculateRowValue,
     handleDeleteChildTableRow,
-    recipitData,
+    receiptData,
     setMaterialWeight,
     closeModal,
     handleSaveModal,
@@ -71,6 +70,10 @@ const DetailPageReadyReceipt = () => {
     selectedLocation,
     setSelectedLocation,
     specificDataFromStore,
+    deliveryRefDropdownData,
+    deliveryNoteRefNo,
+    setDeliveryNoteRefNo,
+    handleGetItemsByDeliveryRef,
   } = useReadyReceiptKarigar();
 
   // const SpecificDataFromStore: any = useSelector(get_specific_receipt_data);
@@ -81,17 +84,17 @@ const DetailPageReadyReceipt = () => {
     if (defaultKarigarData?.length > 0 && defaultKarigarData !== null) {
       defaultKarigarData.map((data: any) => {
         setTableData(data?.items);
-        setRecipitData(data);
+        setReceiptData(data);
         setReadyReceiptType(data?.custom_ready_receipt_type);
         setSelectedDropdownValue(data?.custom_karigar);
-        setSelectedLocation(data?.custom_store_location);
+        // setSelectedLocation(data?.set_warehouse);
       });
     }
   }, [
     defaultKarigarData,
     setReadyReceiptType,
     setSelectedDropdownValue,
-    setRecipitData,
+    setReceiptData,
     setTableData,
     setSelectedLocation,
   ]);
@@ -114,6 +117,7 @@ const DetailPageReadyReceipt = () => {
       window.removeEventListener('keydown', handleKeyDown); // Cleanup on component unmount
     };
   }, [tabDisabled]);
+  console.log('karigar data', defaultKarigarData);
   return (
     <div className="container">
       {isLoading ? (
@@ -165,10 +169,10 @@ const DetailPageReadyReceipt = () => {
 
               <div className=" table">
                 <KundanTable
-                  handleRecipietChange={handleRecipietChange}
-                  recieptData={recipitData}
+                  handleReceiptChange={handleReceiptChange}
+                  recieptData={receiptData}
                   karigarData={karigarData}
-                  setRecipitData={setRecipitData}
+                  setRecipitData={setReceiptData}
                   selectedDropdownValue={selectedDropdownValue}
                   setSelectedDropdownValue={setSelectedDropdownValue}
                   defaultKarigarData={defaultKarigarData}
@@ -183,17 +187,31 @@ const DetailPageReadyReceipt = () => {
                   setKunKarigarDropdownReset={setKunKarigarDropdownReset}
                 />
               </div>
-              <div className="container d-flex justify-content-end p-o">
-                <button
-                  className="btn btn-link p-0"
-                  onClick={() => {
-                    if (!readOnlyFields) {
-                      handleAddRow('tableRow');
-                    }
-                  }}
-                >
-                  Add Row
-                </button>
+              <div className="container d-flex justify-content-between p-0 mb-1">
+                <DeliveryNoteReference
+                  DeliveryRefNo={deliveryRefDropdownData}
+                  receiptData={receiptData}
+                  setReceiptData={setReceiptData}
+                  deliveryNoteRefNo={deliveryNoteRefNo}
+                  setDeliveryNoteRefNo={setDeliveryNoteRefNo}
+                  setStateForDocStatus={setStateForDocStatus}
+                  readOnlyFields={readOnlyFields}
+                  setKunKarigarDropdownReset={setKunKarigarDropdownReset}
+                  handleGetItemsByDeliveryRef={handleGetItemsByDeliveryRef}
+                  defaultData={defaultKarigarData}
+                />
+                <div>
+                  <button
+                    className="btn btn-link p-0"
+                    onClick={() => {
+                      if (!readOnlyFields) {
+                        handleAddRow('tableRow');
+                      }
+                    }}
+                  >
+                    Add Row
+                  </button>
+                </div>
               </div>
               <div className="table">
                 <KundanKarigarReadyReceiptMasterTable
@@ -235,8 +253,8 @@ const DetailPageReadyReceipt = () => {
                 materialListData={materialListData}
                 calculateRowValue={calculateRowValue}
                 handleDeleteChildTableRow={handleDeleteChildTableRow}
-                setRecipitData={setRecipitData}
-                recipitData={recipitData}
+                setRecipitData={setReceiptData}
+                recipitData={receiptData}
                 selectedDropdownValue={selectedDropdownValue}
                 setSelectedDropdownValue={setSelectedDropdownValue}
                 handleSaveModal={handleSaveModal}

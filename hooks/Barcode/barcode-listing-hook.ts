@@ -66,7 +66,7 @@ const useBarcodeListingHook = () => {
     }
   };
 
-  console.log('updated multiple record', multipleRecordsForPrint);
+  // console.log('updated multiple record', multipleRecordsForPrint);
 
   const handleCheckboxForBarcodePrint = (id: any, name: any) => {
     console.log('prev items check', id, name);
@@ -88,10 +88,13 @@ const useBarcodeListingHook = () => {
 
   const handleSelectAll = (ListData: any, tableViewData: number) => {
     setSelectAll((prevSelectAll: boolean) => {
-      const allItems = ListData.slice(0, tableViewData).map((item: any) => ({
-        id: item.idx,
-        name: item.item_code,
-      }));
+      console.log('listdata', ListData);
+      const allItems =
+        ListData?.length > 0 &&
+        ListData.slice(0, tableViewData).map((item: any) => ({
+          id: item.idx,
+          name: item.item_code,
+        }));
 
       // Update the state to the opposite value
       setMultipleRecordsForPrint(prevSelectAll ? [] : allItems);
