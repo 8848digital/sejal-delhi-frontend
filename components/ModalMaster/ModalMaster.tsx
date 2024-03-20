@@ -49,10 +49,10 @@ const ModalMaster = ({
                     Sr. no
                   </th>
                   <th className="thead" scope="col">
-                    Material (Master)
+                    Material Abbr (Master)
                   </th>
                   <th className="thead" scope="col">
-                    Material Abbr (Master)
+                    Material (Master)
                   </th>
                   <th className="thead" scope="col">
                     Pcs
@@ -85,6 +85,15 @@ const ModalMaster = ({
                       <tr key={i}>
                         <td className="table_row">{i + 1}</td>
                         <td className="table_row">
+                          <input
+                            className={` ${styles.input_field} modal-input text-center`}
+                            type="text"
+                            defaultValue={element.material_abbr}
+                            value={element.material_abbr}
+                            readOnly={readOnlyFields}
+                          />
+                        </td>
+                        <td className="table_row">
                           <SelectInputMaterial
                             materialListData={materialListData}
                             materialWeight={materialWeight}
@@ -103,15 +112,7 @@ const ModalMaster = ({
                             style={'max-width'}
                           />
                         </td>
-                        <td className="table_row">
-                          <input
-                            className={` ${styles.input_field} modal-input text-center`}
-                            type="text"
-                            defaultValue={element.material_abbr}
-                            value={element.material_abbr}
-                            readOnly={readOnlyFields}
-                          />
-                        </td>
+
                         <td className="table_row">
                           <input
                             className={` ${styles.input_field} modal-input text-end`}
@@ -244,7 +245,7 @@ const ModalMaster = ({
                             <FontAwesomeIcon
                               icon={faTrash}
                               className="text-danger"
-                            // style={{ color: 'red', fontSize: 20 }}
+                              // style={{ color: 'red', fontSize: 20 }}
                             />
                           </button>
                         </td>

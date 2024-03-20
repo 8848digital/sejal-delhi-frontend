@@ -12,8 +12,7 @@ const ReportFilterListing: any = ({
   setSearchVoucherNum,
   itemList,
   HandleSearchInput,
-  searchName,
-  setSearchName,
+  searchInputValues,
   name,
   HandleSerachReport,
 }: any) => {
@@ -48,6 +47,7 @@ const ReportFilterListing: any = ({
             name="from_date"
             className="form-control input-fields custom-input-field line-height bg-primary bg-opacity-10 "
             onChange={HandleSearchInput}
+            value={searchInputValues.from_date}
           />
         </div>
       </div>
@@ -59,6 +59,7 @@ const ReportFilterListing: any = ({
             name="to_date"
             className="form-control input-fields custom-input-field line-height bg-primary bg-opacity-10"
             onChange={HandleSearchInput}
+            value={searchInputValues.to_date}
           />
         </div>
       </div>

@@ -310,7 +310,7 @@ const useReadyReceiptKarigar = () => {
       entity: 'material_post_api',
       data: modalValue,
     };
-    const materialApiVal = await postMaterialApi(loginAcessToken.token, values);
+
     setShowModal(false);
     setStateForDocStatus(true);
     setMatWt('');

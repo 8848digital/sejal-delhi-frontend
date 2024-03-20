@@ -90,6 +90,7 @@ const ItemStatusReport: any = ({
         setSelectDropDownReset={setSelectDropDownReset}
         searchVoucherNum={searchVoucherNum}
         setSearchVoucherNum={setSearchVoucherNum}
+        searchInputValues={searchInputValues}
         itemList={itemList}
         HandleSearchInput={HandleSearchInput}
         searchName={searchName}
