@@ -102,7 +102,7 @@ const ItemStatusReport: any = ({
       {isLoading === 0 && <Loader />}
       {isLoading === 2 && (
         <NoRecord
-          title={`No Record Found 😥`}
+          title={`No Record Found `}
           heading=""
           HandleRefresh={HandleRefresh}
         />
