@@ -319,7 +319,7 @@ const UseCustomReceiptHook: any = () => {
   const UpdateMaterialWeight: any = (id: any, weightAmt: any) => {
     const updatedTableData =
       tableData?.map((item: any) => {
-        if (item.idx === id && item.idx === 1) {
+        if (item.idx === id) {
           return {
             ...item,
             custom_mat_wt: weightAmt,
@@ -359,7 +359,7 @@ const UseCustomReceiptHook: any = () => {
   const UpdatePcsWeight: any = (id: any, pcsAmt: any) => {
     const updatedTableData =
       tableData?.map((item: any) => {
-        if (item.idx === id && item.idx === 1) {
+        if (item.idx === id) {
           return {
             ...item,
             table: item.table?.map((materialData: any) => {
