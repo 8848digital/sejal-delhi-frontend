@@ -27,12 +27,8 @@ const Navbar = () => {
 
   return (
     <div className="container-lg">
-      <div className=" bg-light">
-        <nav
-          className="d-flex"
-          // className="container-lg mt-2 d-flex flex-wrap justify-content-between "
-        >
-          {/* <div></div> */}
+      <div className=" ">
+        <nav className="d-flex">
           <div className="container-lg mt-2 d-flex flex-wrap justify-content-center ">
             <ReceiptsHeader
               showReceipt={showReceipt}
